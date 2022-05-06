@@ -12,11 +12,13 @@ import src.dto.AddressDto;
 import src.dto.IdentityDocumentDto;
 import src.dto.PersonDto;
 import src.exception.*;
+import src.mapper.AddressMapper;
 import src.mapper.PersonMapper;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -95,6 +97,11 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public Optional<PersonDto> createPerson(PersonDto personDto) {
+        addressRepository.saveAll(personDto.getAddresses()
+                .stream()
+                .map(AddressMapper::dto2Entity)
+                .collect(Collectors.toList()));
+
         Person person = PersonMapper.dto2Entity(personDto);
 
         Set<IdentityDocument> documents = person.getDocuments();
